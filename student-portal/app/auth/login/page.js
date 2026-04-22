@@ -30,14 +30,15 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:5002/api/login", {
+      const res = await axios.post("http://localhost:5002/api/auth/login", {
         email,
         password,
       });
 
       toast.success(res.data.message || "Login successful");
 
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+     localStorage.setItem("token", res.data.token);
+     localStorage.setItem("user", JSON.stringify(res.data.user));
 
 
       // redirect

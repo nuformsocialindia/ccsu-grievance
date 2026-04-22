@@ -1,77 +1,135 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 export default function Profile() {
+  const [user, setUser] = useState(null);
+
+useEffect(() => {
+  const token = localStorage.getItem("token");
+
+  console.log("TOKEN FROM LOCALSTORAGE:", token);
+
+  fetch("http://localhost:5002/api/user/profile", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("PROFILE API RESPONSE:", data);
+        setUser(data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-start justify-center px-4 py-10">
 
-      <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl grid md:grid-cols-3 overflow-hidden">
+      <div className="w-full flex items-center justify-center">
 
-        {/* LEFT SIDE - PROFILE CARD */}
-        <div className="bg-gradient-to-b from-[#D6DDFF]  text-black p-6 flex flex-col items-center justify-center relative">
-          
-          <div className="w-24 h-24 rounded-full bg-white text-[#14297A] flex items-center justify-center text-3xl font-bold shadow-lg mb-4">
-            S
+        <div className="w-full max-w-6xl bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-3 border border-white/40">
+
+          {/* LEFT SIDE */}
+          <div className="relative p-6 sm:p-8 flex flex-col items-center justify-between bg-gradient-to-br from-[#14297A] to-[#3b4d9c] text-white min-h-[350px] md:min-h-full">
+
+            <div className="absolute top-0 left-0 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+            <div className="absolute bottom-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+
+            <div className="flex flex-col items-center z-10 text-center">
+
+              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-white text-[#14297A] flex items-center justify-center text-3xl sm:text-4xl font-bold shadow-xl border-4 border-white/30">
+                {user.name?.charAt(0)}
+              </div>
+
+              <h2 className="text-lg sm:text-xl font-semibold mt-4">
+                {user.name}
+              </h2>
+
+              <p className="text-xs sm:text-sm text-white/80 break-all">
+                {user.email}
+              </p>
+
+              <div className="w-16 h-[2px] bg-white/40 my-5 rounded-full"></div>
+
+              <div className="w-full text-sm space-y-3">
+                <Info label="City" value={user.city || "N/A"} />
+                <Info label="Phone" value={user.mobile || "N/A"} />
+              </div>
+
+              <div className="w-full text-sm space-y-3">
+                <Info label="Address" value={user.address || "N/A"} />
+                <Info label="Enrollment" value={user.enrollment || "N/A"} />
+              </div>
+            </div>
           </div>
 
-          <h2 className="text-xl font-semibold">Shubhi Sharma</h2>
-          <p className="text-sm opacity-90">shubhi@email.com</p>
+          {/* RIGHT SIDE (FORM DYNAMIC) */}
+          <div className="md:col-span-2 p-5 sm:p-8 md:p-10 flex flex-col justify-center">
 
-          <div className="mt-6 w-full text-sm space-y-2">
-            <p className="flex justify-between border-b border-white/30 pb-1">
-              <span>City</span> <span>Ghaziabad</span>
-            </p>
-            <p className="flex justify-between border-b border-white/30 pb-1">
-              <span>Phone</span> <span>9876543210</span>
-            </p>
-          </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-6 text-center md:text-left">
+              Edit Profile
+            </h2>
 
-          {/* subtle glow */}
-          <div className="absolute inset-0 bg-white/10 blur-3xl opacity-20"></div>
-        </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
 
-        {/* RIGHT SIDE - FORM */}
-        <div className="md:col-span-2 p-6 sm:p-8 space-y-6">
+              <Input label="Full Name" value={user.name} />
+              <Input label="Email" value={user.email} />
+              <Input label="Mobile" value={user.mobile} />
+              <Input label="City" value={user.city} />
+              <Input label="Address" value={user.address} />
+              <Input label="Enrollment No." value={user.enrollment} />
 
-          <h2 className="text-2xl font-bold text-gray-800">
-            Edit Profile
-          </h2>
+            </div>
 
-          {/* FORM GRID */}
-          <div className="grid sm:grid-cols-2 gap-5">
-
-            <Input label="Full Name" placeholder="Enter your name" />
-            <Input label="Email" placeholder="Enter your email" />
-            <Input label="Mobile" placeholder="Enter mobile number" />
-            <Input label="City" placeholder="Enter city" />
-            <Input label="Address" placeholder="Enter address" />
-            <Input label="Pincode" placeholder="Enter pincode" />
+            <div className="mt-8">
+              <button className="w-full bg-gradient-to-r from-[#14297A] to-[#3b4d9c] text-white py-3 rounded-xl font-medium shadow-lg hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 cursor-pointer">
+                Update Profile
+              </button>
+            </div>
 
           </div>
-
-          {/* BUTTON */}
-          <div className="pt-4">
-            <button className="w-full bg-gradient-to-r from-[#14297A] to-[#14297A] text-white py-3 rounded-xl font-medium shadow-lg hover:scale-[1.02] transition">
-              Update Profile
-            </button>
-          </div>
-
         </div>
       </div>
     </div>
   );
 }
 
-/* INPUT COMPONENT */
-function Input({ label, ...props }) {
+function Input({ label, value }) {
   return (
     <div className="relative">
-      <label className="text-sm text-gray-600 mb-1 block">
+      <input
+        defaultValue={value}
+        placeholder=" "
+        className="peer w-full border border-gray-300 rounded-xl px-4 pt-5 pb-2 outline-none focus:ring-2 focus:ring-[#14297A] focus:border-[#14297A] transition-all shadow-sm text-sm"
+      />
+      <label
+        className="absolute left-4 top-2 text-xs text-gray-500 transition-all 
+        peer-placeholder-shown:top-3.5 
+        peer-placeholder-shown:text-sm 
+        peer-focus:top-2 
+        peer-focus:text-xs"
+      >
         {label}
       </label>
-      <input
-        {...props}
-        className="w-full border border-gray-300 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-[#14297a] focus:border-[#14297a] transition shadow-sm"
-      />
+    </div>
+  );
+}
+
+/* INFO */
+function Info({ label, value }) {
+  return (
+    <div className="flex justify-between border-b border-white/20 pb-2 text-xs sm:text-sm">
+      <span className="text-white/70">{label}</span>
+      <span className="font-medium">{value}</span>
     </div>
   );
 }
