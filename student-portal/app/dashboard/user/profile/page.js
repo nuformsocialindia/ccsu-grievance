@@ -1,24 +1,43 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
-
-useEffect(() => {
-  const token = localStorage.getItem("token");
-
-  console.log("TOKEN FROM LOCALSTORAGE:", token);
-
-  fetch("http://localhost:5002/api/user/profile", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+  const [formData, setFormData] = useState({
+    name: "",
+    email:"",
+    mobile:"",
+    address:"",
+    city:"",
+    enrollment:""
   })
+
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    })
+  }
+
+  // get the data 
+    useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    console.log("TOKEN FROM LOCALSTORAGE:", token);
+
+    fetch("http://localhost:5002/api/user/profile", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         console.log("PROFILE API RESPONSE:", data);
         setUser(data);
+        setFormData(data);
       })
       .catch((err) => console.log(err));
   }, []);
@@ -31,6 +50,26 @@ useEffect(() => {
     );
   }
 
+// update profile data
+const handleUpdate = async () => {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch("http://localhost:5002/api/user/update-profile", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(formData), 
+  });
+
+  const data = await res.json();
+  console.log("UPDATE RESPONSE:", data); 
+  toast.success("Profile updated");
+console.log("Profile API Response",formData)
+  setUser(formData);
+  
+};
   return (
     <div className="min-h-screen flex items-start justify-center px-4 py-10">
 
@@ -81,17 +120,22 @@ useEffect(() => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
 
-              <Input label="Full Name" value={user.name} />
-              <Input label="Email" value={user.email} />
-              <Input label="Mobile" value={user.mobile} />
-              <Input label="City" value={user.city} />
-              <Input label="Address" value={user.address} />
-              <Input label="Enrollment No." value={user.enrollment} />
+              <Input label="Full Name" name="name" value={formData.name} onChange={handleChange} />
+              <Input label="Email" name="email" value={formData.email} onChange={handleChange} />
+
+              <Input label="Mobile" name="mobile" value={formData.mobile} onChange={handleChange} />
+
+              <Input label="City" name="city" value={formData.city} onChange={handleChange} />
+
+              <Input label="Address" name="address" value={formData.address} onChange={handleChange} />
+
+              <Input label="Enrollment No" name="enrollment" value={formData.enrollment} onChange={handleChange} />
+
 
             </div>
 
             <div className="mt-8">
-              <button className="w-full bg-gradient-to-r from-[#14297A] to-[#3b4d9c] text-white py-3 rounded-xl font-medium shadow-lg hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 cursor-pointer">
+              <button onClick={handleUpdate} className="w-full bg-gradient-to-r from-[#14297A] to-[#3b4d9c] text-white py-3 rounded-xl font-medium shadow-lg hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 cursor-pointer">
                 Update Profile
               </button>
             </div>
@@ -103,11 +147,13 @@ useEffect(() => {
   );
 }
 
-function Input({ label, value }) {
+function Input({ label, name, value, onChange }) {
   return (
     <div className="relative">
       <input
-        defaultValue={value}
+        name={name}
+        value={value || ""}
+        onChange={onChange}
         placeholder=" "
         className="peer w-full border border-gray-300 rounded-xl px-4 pt-5 pb-2 outline-none focus:ring-2 focus:ring-[#14297A] focus:border-[#14297A] transition-all shadow-sm text-sm"
       />

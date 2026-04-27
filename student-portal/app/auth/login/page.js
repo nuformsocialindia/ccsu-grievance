@@ -42,7 +42,13 @@ export default function Login() {
 
 
       // redirect
-      router.push("/dashboard/admin");
+    const role = res.data.user.role
+    if(role === "admin"){
+      router.push("/dashboard/admin")
+
+    }else{
+      router.push("/dashboard/user")
+    }
 
     } catch (err) {
       const msg = err.response?.data?.message || "Login Failed"

@@ -1,9 +1,12 @@
 "use client";
-import { Upload } from "lucide-react";
+import { Upload, ArrowLeft } from "lucide-react";
 import { useState } from "react";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation"
 
 export default function ComplaintForm() {
     const [status, setStatus] = useState("");
+    const router = useRouter()
     const [errors, setErrors] = useState({});
     const [form, setForm] = useState({
         name: "",
@@ -68,7 +71,7 @@ export default function ComplaintForm() {
             const data = await res.json();
 
             if (res.ok) {
-                setStatus("Complaint submitted successfully!");
+                toast.success("Complaint submitted successfully!");
                 setErrors({});
                 setForm({
                     name: "",
@@ -78,8 +81,19 @@ export default function ComplaintForm() {
                     email: "",
                     phone: "",
                     college: "",
+                    category: "",
+                    subject: "",
+                    description: "",
+                    date: "",
+                    campus: "",
+                    resolution: "",
+                    file: null,
                     agree: false,
                 });
+                setTimeout(() => {
+                    router.push("/dashboard/user/my-complaints");
+                }, 1500);
+
             } else {
                 setStatus("Submission failed!");
             }
@@ -114,16 +128,27 @@ export default function ComplaintForm() {
                 className="w-full max-w-5xl bg-white rounded-3xl shadow-xl overflow-hidden"
             >
 
-                {/* HEADER */}
-                <div className="bg-[#14297a] px-6 py-6 text-center relative">
-                    <h2 className="text-2xl font-bold text-white">
-                        University Complaint Form
-                    </h2>
-                    <p className="text-[#F4C751] mt-1 text-sm">
-                        Submit your issue, we will resolve it quickly
-                    </p>
-                </div>
 
+                {/* HEADER */}
+                <div className="bg-[#14297a] px-6 py-6 text-center relative flex items-center justify-center">
+
+                    {/* Back Arrow */}
+                    <button
+                        onClick={() => router.push("/dashboard/user/my-complaints")}
+                        className="absolute left-4 text-white hover:text-[#F4C751] transition"
+                    >
+                        <ArrowLeft size={24} />
+                    </button>
+
+                    <div>
+                        <h2 className="text-2xl font-bold text-white">
+                            University Complaint Form
+                        </h2>
+                        <p className="text-[#F4C751] mt-1 text-sm">
+                            Submit your issue, we will resolve it quickly
+                        </p>
+                    </div>
+                </div>
 
                 <div className="p-6 space-y-6">
 
@@ -231,7 +256,7 @@ export default function ComplaintForm() {
                         />
 
                         <p className="text-xs text-gray-500 mt-1">
-                           {(form.description || "").trim().split(/\s+/).filter(Boolean).length} / 150 words
+                            {(form.description || "").trim().split(/\s+/).filter(Boolean).length} / 150 words
                         </p>
                     </div>
 

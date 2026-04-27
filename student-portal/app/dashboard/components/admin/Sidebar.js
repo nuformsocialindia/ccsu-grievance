@@ -50,26 +50,26 @@ export default function AdminSidebar() {
 
 
 
-          <li className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#1E3A8A] transition">
+          {/* <li className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#1E3A8A] transition">
             <FiUsers />
             <Link href="/dashboard/admin/users">User Profile</Link>
-          </li>
+          </li> */}
 
           <li className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#1E3A8A] transition">
             <FiBarChart2 />
             <Link href="/dashboard/admin/reports">Reports</Link>
           </li>
 
-          <li className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#1E3A8A] transition">
+          {/* <li className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#1E3A8A] transition">
             <FiSettings />
             <Link href="/dashboard/admin/settings">Settings</Link>
-          </li>
+          </li> */}
 
         </ul>
       </div>
 
       {/* Bottom Logout */}
-      <div className="border-t border-gray-500 pt-4">
+      {/* <div className="border-t border-gray-500 pt-4">
         <div
           onClick={handleLogout}
           className="flex items-center gap-3 p-2 rounded-lg hover:bg-red-500 transition cursor-pointer"
@@ -77,7 +77,7 @@ export default function AdminSidebar() {
           <FiLogOut />
           <span>Logout</span>
         </div>
-      </div>
+      </div> */}
 
 
     </aside>

@@ -1,12 +1,46 @@
 "use client";
-import { FiBell, FiSearch } from "react-icons/fi";
+import { FiBell, FiSearch, FiLogOut } from "react-icons/fi";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import Link from "next/link"
+// import { FiHelpCircle } from "react-icons/fi"
+
+
+
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const router = useRouter();
+
+
+
+  useEffect(() => {
+  const storedUser = localStorage.getItem("user");
+
+  if (storedUser) {
+    const parsedUser = JSON.parse(storedUser)
+    console.log("User Data",parsedUser )
+    setUser(JSON.parse(storedUser));
+    
+  }
+}, []);
+// useEffect(() => {
+//   setUser({ role: "user" });
+// }, []);
+
+  const handleLogout = () => {
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    router.push("/login");
+  };
+  
 
   return (
-    <div className="w-full bg-white/70 backdrop-blur-md px-4 sm:px-6 py-2 flex items-center justify-between">
+    <div className="fixed top-0 left-64 w-[calc(100%-16rem)] z-50 bg-white/70 backdrop-blur-md px-4 sm:px-6 py-3 flex items-center justify-between">
 
       {/* LEFT - SEARCH */}
       <div className="hidden sm:flex items-center gap-2 bg-gray-100/80 px-4 py-3 rounded-xl w-full max-w-md focus-within:ring-2 focus-within:ring-blue-400 transition">
@@ -47,17 +81,43 @@ export default function Navbar() {
           />
 
           {/* DROPDOWN */}
-          {open && (
-           <ul className="absolute right-0 mt-2 z-50 text-sm text-gray-700 bg-white rounded-lg overflow-hidden shadow-md">
-              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                Profile
+          {open && user && (
+            <ul className="absolute right-0 mt-2 z-50 w-44 text-sm text-gray-700 bg-white rounded-lg overflow-hidden shadow-md">
+
+              {/* USER MENU */}
+              {user?.role === "user" && (
+                <>
+                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-black">
+                    <Link href="/dashboard/user/profile">User Profile</Link>
+                  </li>
+
+                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                    <Link href="/dashboard/user/settings">Settings</Link>
+                  </li>
+                </>
+              )}
+
+              {/* ADMIN MENU */}
+              {user?.role === "admin" && (
+                <>
+                  <li className="px-4 py-2 flex items-center gap-2 hover:bg-gray-100 cursor-pointer">
+            {/* <FiUsers /> */}
+            <Link href="/dashboard/admin/users"> View Profile</Link>
+          </li>
+                 <li className="px-4 py-2 flex items-center gap-2 hover:bg-gray-100 cursor-pointer"> 
+                  {/* <FiHelpCircle /> */}
+                   <Link href="/dashboard/admin/settings" className="w-full"> Settings </Link> </li>
+                </>
+              )}
+
+              {/* LOGOUT */}
+              <li
+                onClick={handleLogout}
+                className="px-4 py-2 flex items-center gap-2 hover:bg-red-100 text-red-500 cursor-pointer"
+              >
+                Logout <FiLogOut />
               </li>
-              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                Settings
-              </li>
-              <li className="px-4 py-2 hover:bg-red-100 text-red-500 cursor-pointer">
-                Logout
-              </li>
+
             </ul>
           )}
         </div>
