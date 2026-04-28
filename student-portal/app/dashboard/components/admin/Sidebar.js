@@ -6,13 +6,14 @@ import {
   FiFileText,
   FiCheckCircle,
   FiClock,
-  FiUsers,
+  FiUser,
   FiBarChart2,
   FiSettings,
+
   FiLogOut,
   FiRepeat
 } from "react-icons/fi"
-
+import { FaBuilding } from "react-icons/fa";
 export default function AdminSidebar() {
   const router = useRouter()
   const handleLogout = () => {
@@ -43,41 +44,31 @@ export default function AdminSidebar() {
             <FiFileText />
             <Link href="/dashboard/admin/complaints">Complaints</Link>
           </li>
+           <li className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#1E3A8A] transition">
+            <FiUser />
+            <Link href="/dashboard/admin/adminuser">Admin User</Link>
+          </li>
+    <li className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#1E3A8A] transition">
+            <FaBuilding  />
+            <Link href="/dashboard/admin/department">Department</Link>
+          </li>
+
           <li className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#1E3A8A] transition">
             <FiRepeat />
             <Link href="/dashboard/admin/transfer">Transfer</Link>
           </li>
 
 
-
-          {/* <li className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#1E3A8A] transition">
-            <FiUsers />
-            <Link href="/dashboard/admin/users">User Profile</Link>
-          </li> */}
-
           <li className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#1E3A8A] transition">
             <FiBarChart2 />
             <Link href="/dashboard/admin/reports">Reports</Link>
           </li>
 
-          {/* <li className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#1E3A8A] transition">
-            <FiSettings />
-            <Link href="/dashboard/admin/settings">Settings</Link>
-          </li> */}
+         
 
         </ul>
       </div>
 
-      {/* Bottom Logout */}
-      {/* <div className="border-t border-gray-500 pt-4">
-        <div
-          onClick={handleLogout}
-          className="flex items-center gap-3 p-2 rounded-lg hover:bg-red-500 transition cursor-pointer"
-        >
-          <FiLogOut />
-          <span>Logout</span>
-        </div>
-      </div> */}
 
 
     </aside>
