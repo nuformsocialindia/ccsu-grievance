@@ -46,7 +46,7 @@ export default function Register() {
       return;
     }
 
-    setErrors({}); // clear errors if valid
+    setErrors({}); 
 
     try {
       const res = await fetch("http://localhost:5002/api/auth/register", {
@@ -61,7 +61,9 @@ export default function Register() {
 
       if (res.ok) {
         toast.success("Registered Successfully");
-      } else {
+      //  localStorage.setItem("user",JSON.stringify(data.user))
+      }
+       else {
         toast.error(data.message || "Registration failed");
       }
     } catch (error) {

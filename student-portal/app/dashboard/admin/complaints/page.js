@@ -5,56 +5,79 @@ import { useEffect, useState } from "react";
 
 export default function AllComplaints() {
   const [data, setData] = useState([]);
+  const [status, setStatus] = useState("pending")
+  const [openIndex, setOpenIndex] = useState(null)
+  const [selectedComplaint, setSelectedComplaint] = useState(null)
+  const [showModal, setShowModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedEditComplaint, setSelectedEditComplaint] = useState(null);
+  const [editForm, setEditForm] = useState(null);
 
   useEffect(() => {
     fetchComplaints();
   }, []);
-const fetchComplaints = async () => {
-    let finalData = []; 
-  try {
-    console.log("Fetching all the complaints")
-   const res = await fetch("http://localhost:5002/api/complaints/create", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    roll: form.roll,
-    college: form.college,
-    name: form.name,
-    subject: form.subject,
-    phone: form.phone,
-  }),
-});
-    if (!res.ok) {
-      throw new Error(`HTTP error! Status: ${res.status}`);
-    }
 
-    const text = await res.text();
-    console.log("RAW RESPONSE:", text);
-
-    let data;
+  const handleStatusChange = async (id, newStatus) => {
     try {
-      data = text ? JSON.parse(text) : [];
-      console.log("Parsed data", data)
+      const res = await fetch(
+        `http://localhost:5002/api/complaints/status/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
+
+      if (!res.ok) throw new Error("Failed");
+
+      fetchComplaints();
+      setOpenIndex(null);
     } catch (err) {
-      console.log("JSON parse error:", err);
-      data = [];
+      console.log(err);
     }
+  };
+  const fetchComplaints = async () => {
+    try {
+      const res = await fetch("http://localhost:5002/api/complaints/all");
 
-    // handle both array or object response
-    const finalData = Array.isArray(data)
-      ? data
-      : data?.data || [];
+      if (!res.ok) {
+        throw new Error("Failed to fetch");
+      }
 
-    setData(finalData);
-  } catch (error) {
-    console.log("Fetch error:", error);
-    console.log("Final data", finalData)
-    setData([]);
-  }
-};
+      const data = await res.json();
 
+      console.log("Fetched Data:", data);
+
+      setData(data);
+    } catch (error) {
+      console.log("Fetch error:", error);
+      setData([]);
+    }
+  };
+  const handleUpdate = async () => {
+    try {
+      const res = await fetch(
+        `http://localhost:5002/api/complaints/update/${editForm.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(editForm),
+        }
+      );
+
+      if (!res.ok) throw new Error("Update failed");
+
+      await fetchComplaints();
+      setShowEditModal(false);
+      setEditForm(null);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       {/* Header */}
@@ -86,52 +109,106 @@ const fetchComplaints = async () => {
           </thead>
 
           <tbody>
-            {data.map((item, index) => (
-              <tr
-                key={item.id || index}
-                className="border-b hover:bg-gray-50 transition"
-              >
-                <td className="px-5 py-4 font-medium">
-                  {item.enrollment}
-                </td>
-                <td className="px-5 py-4">{item.college}</td>
-                <td className="px-5 py-4 text-gray-700">
-                  {item.name}
-                </td>
-                <td className="px-5 py-4">{item.title}</td>
-                <td className="px-5 py-4">{item.phone}</td>
+            {data.map((item, index) => {
+              console.log("Row data:", item);
 
-                {/* Status */}
-                <td className="px-5 py-4">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      item.status === "Pending"
+              return (
+                <tr key={item.id || index} className="border-b hover:bg-gray-50">
+
+                  <td className="px-5 py-4 font-medium">
+                    {item.enrollment}
+                  </td>
+
+                  <td className="px-5 py-4">
+                    {item.college}
+                  </td>
+
+                  <td className="px-5 py-4">
+                    {item.name}
+                  </td>
+
+                  <td className="px-5 py-4">
+                    {item.subject}
+                  </td>
+
+                  <td className="px-5 py-4">
+                    {item.phone}
+                  </td>
+
+                  <td className="px-5 py-4">
+                    <span
+                      onClick={() => setOpenIndex(!openIndex === index ? null : index)
+
+                      }
+                      className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer ${item.status === "Pending"
                         ? "bg-yellow-100 text-yellow-700"
                         : item.status === "Resolved"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
-                    }`}
-                  >
-                    {item.status}
-                  </span>
-                </td>
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                        }`}
+                    >
+                      {item.status}
+                    </span>
+                    {openIndex === index && (
+                      <div className="absolute mt-2 bg-white border rounded shadow-md z-10">
+                        <div
+                          onClick={() => handleStatusChange(item.id, "Pending")}
+                          className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                        >
+                          Pending
+                        </div>
 
-                {/* Actions */}
-                <td className="px-5 py-4">
-                  <div className="flex justify-center items-center gap-3">
-                    <button className="text-blue-600 hover:text-blue-800 transition">
-                      <FiEye size={18} />
-                    </button>
+                        <div
+                          onClick={() => handleStatusChange(item.id, "Resolved")}
+                          className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                        >
+                          Resolved
+                        </div>
 
-                    <button className="text-green-600 hover:text-green-800 transition">
-                      <FiEdit size={18} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                        <div
+                          onClick={() => handleStatusChange(item.id, "Rejected")}
+                          className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                        >
+                          Rejected
+                        </div>
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-5 py-4">
+                    <div className="flex items-center justify-center gap-3">
+                      <button
+                        onClick={() => {
+                          setSelectedComplaint(item);
+                          setShowModal(true)
+                        }}
+
+
+                        className="p-2 rounded-full bg-blue-60 transition cursor-pointer">
+                        <FiEye className="text-[#14297a] text-base" />
+
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedEditComplaint(item);
+                          setEditForm(item);
+                          setShowEditModal(true);
+                        }}
+                        className="p-2 rounded-full bg-green-50 hover:bg-green-100 transition cursor-pointer"
+                      >
+                        <FiEdit className="text-green-600 text-base" />
+                      </button>
+
+
+                    </div>
+
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
+
         </table>
+
 
         {/* Empty State */}
         {data.length === 0 && (
@@ -139,7 +216,203 @@ const fetchComplaints = async () => {
             No complaints found
           </div>
         )}
+
       </div>
+      {showModal && selectedComplaint && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+
+          {/* CARD */}
+          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden">
+
+            {/* HEADER */}
+            <div className="bg-[#14297a] px-6 py-4 flex justify-between items-center">
+              <h2 className="text-white text-lg font-semibold">
+                Complaint Details
+              </h2>
+
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-white hover:text-[#F4C751] text-xl cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* BODY */}
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+
+              {/* FIELD BOX */}
+              {[
+                { label: "Name", value: selectedComplaint.name },
+                { label: "Enrollment", value: selectedComplaint.enrollment },
+                { label: "College", value: selectedComplaint.college },
+                { label: "Phone", value: selectedComplaint.phone },
+                { label: "Department", value: selectedComplaint.department },
+                { label: "Semester", value: selectedComplaint.semester },
+                { label: "Email", value: selectedComplaint.email },
+                { label: "Category", value: selectedComplaint.category },
+                { label: "Subject", value: selectedComplaint.subject },
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="border border-gray-200 rounded-xl p-3 bg-gray-50"
+                >
+                  <p className="text-xs text-gray-500 uppercase tracking-wide">
+                    {item.label}
+                  </p>
+                  <p className="text-gray-800 font-medium mt-1">
+                    {item.value || "Not provided"}
+                  </p>
+                </div>
+              ))}
+
+              {/* STATUS */}
+              <div className="border border-gray-200 rounded-xl p-3 bg-gray-50">
+                <p className="text-xs text-gray-500 uppercase tracking-wide">
+                  Status
+                </p>
+
+                <span
+                  className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold
+              ${selectedComplaint.status === "Pending"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : selectedComplaint.status === "Resolved"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                >
+                  {selectedComplaint.status || "Not provided"}
+                </span>
+              </div>
+
+              {/* DESCRIPTION (FULL WIDTH) */}
+              <div className="md:col-span-2 border border-gray-200 rounded-xl p-3 bg-gray-50">
+                <p className="text-xs text-gray-500 uppercase tracking-wide">
+                  Description
+                </p>
+                <p className="text-gray-700 mt-2 leading-relaxed">
+                  {selectedComplaint.description || "Not provided"}
+                </p>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showEditModal && selectedEditComplaint && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+
+          <div className="bg-white w-full max-w-2xl max-h-[90vh] rounded-2xl shadow-2xl overflow-y-auto no-scrollbar flex flex-col">
+
+            {/* HEADER */}
+            <div className="bg-[#14297a] px-6 py-4 flex justify-between items-center">
+              <h2 className="text-white text-lg font-semibold">
+                Edit Complaint
+              </h2>
+
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="text-white hover:text-[#F4C751] text-xl cursor-pointer">
+                ✕
+              </button>
+            </div>
+
+       
+            {/* BODY */}
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-5 text-sm overflow-y-auto flex-1">
+
+              {/* Enrollment */}
+              <div>
+                <label className="block text-xs text-gray-500 uppercase tracking-wide mb-1">
+                  Enrollment
+                </label>
+                <input
+                  value={editForm?.enrollment || ""}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, enrollment: e.target.value })
+                  }
+                  className="w-full p-2 border border-gray-200 rounded-lg bg-gray-50 outline-none focus:ring-2 focus:ring-[#14297a]"
+                />
+              </div>
+
+              {/* College */}
+              <div>
+                <label className="block text-xs text-gray-500 uppercase tracking-wide mb-1">
+                  College
+                </label>
+                <input
+                  value={editForm?.college || ""}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, college: e.target.value })
+                  }
+                  className="w-full p-2 border border-gray-200 rounded-lg bg-gray-50 outline-none focus:ring-2 focus:ring-[#14297a]"
+                />
+              </div>
+
+              {/* Name */}
+              <div>
+                <label className="block text-xs text-gray-500 uppercase tracking-wide mb-1">
+                  Name
+                </label>
+                <input
+                  value={editForm?.name || ""}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, name: e.target.value })
+                  }
+                  className="w-full p-2 border border-gray-200 rounded-lg bg-gray-50 outline-none focus:ring-2 focus:ring-[#14297a]"
+                />
+              </div>
+
+              {/* Subject */}
+              <div>
+                <label className="block text-xs text-gray-500 uppercase tracking-wide mb-1">
+                  Subject
+                </label>
+                <input
+                  value={editForm?.subject || ""}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, subject: e.target.value })
+                  }
+                  className="w-full p-2 border border-gray-200 rounded-lg bg-gray-50 outline-none focus:ring-2 focus:ring-[#14297a]"
+                />
+              </div>
+
+              {/* Phone */}
+              <div>
+                <label className="block text-xs text-gray-500 uppercase tracking-wide mb-1">
+                  Phone
+                </label>
+                <input
+                  value={editForm?.phone || ""}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, phone: e.target.value })
+                  }
+                  className="w-full p-2 border border-gray-200 rounded-lg bg-gray-50 outline-none focus:ring-2 focus:ring-[#14297a]"
+                />
+              </div>
+
+            </div>
+
+
+            <div className="p-4 flex justify-end gap-3">
+              <button className="px-4 py-2 bg-gray-200 rounded-lg cursor-pointer">
+                Cancel
+              </button>
+
+              <button
+                onClick={handleUpdate}
+                className="px-4 py-2 bg-[#14297a] text-white rounded-lg cursor-pointer"
+              >
+                Update
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
+
   );
+
 }

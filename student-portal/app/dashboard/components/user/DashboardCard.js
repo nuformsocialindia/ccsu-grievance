@@ -22,8 +22,6 @@ export default function DashboardCard() {
       .then((res) => res.json())
       .then((data) => {
         console.log("API DATA:", data)
-
-        // IMPORTANT FIX 👇
         if (Array.isArray(data)) {
           setRecentComplaints(data)
         } else if (Array.isArray(data.data)) {
