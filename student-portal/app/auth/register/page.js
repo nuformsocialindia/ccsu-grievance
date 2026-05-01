@@ -46,7 +46,7 @@ export default function Register() {
       return;
     }
 
-    setErrors({}); 
+    setErrors({});
 
     try {
       const res = await fetch("http://localhost:5002/api/auth/register", {
@@ -61,9 +61,9 @@ export default function Register() {
 
       if (res.ok) {
         toast.success("Registered Successfully");
-      //  localStorage.setItem("user",JSON.stringify(data.user))
+        //  localStorage.setItem("user",JSON.stringify(data.user))
       }
-       else {
+      else {
         toast.error(data.message || "Registration failed");
       }
     } catch (error) {
@@ -71,52 +71,57 @@ export default function Register() {
     }
   };
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-[#0b1437]">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-gradient-to-br bg-gradient-to-br from-[#0f1b3d] via-[#1c2f6b] to-[#1c2f6b]">
+
 
       {/* LEFT SIDE */}
-      <div className="flex w-full lg:w-1/2 relative flex-col justify-between p-6 xl:p-12 text-white overflow-hidden">
 
-        {/* Background Glow */}
-        <div className="absolute w-[300px] xl:w-[400px] h-[300px] xl:h-[400px] bg-blue-600/30 blur-3xl rounded-full top-[-100px] left-[-100px]" />
-        <div className="absolute w-[250px] xl:w-[300px] h-[250px] xl:h-[300px] bg-purple-600/30 blur-3xl rounded-full bottom-[-80px] right-[-80px]" />
+    <div className="flex w-full lg:w-1/2 relative flex-col justify-between p-5 xl:p-12 text-white overflow-hidden">
 
-        {/* Logo / Title */}
-        <div className="z-10">
-          <h1 className="text-3xl xl:text-4xl font-bold">Smart Portal</h1>
-          <p className="text-white/70 mt-2 text-sm xl:text-base">
-            Manage everything in one place
-          </p>
-        </div>
+  {/* Background Glow */}
+  <div className="absolute w-[300px] xl:w-[400px] h-[300px] xl:h-[400px] bg-blue-600/30 blur-3xl rounded-full top-[-100px] left-[-100px]" />
+  <div className="absolute w-[250px] xl:w-[300px] h-[250px] xl:h-[300px] bg-purple-600/30 blur-3xl rounded-full bottom-[-80px] right-[-80px]" />
 
-        {/* Middle Content */}
-        <div className="z-10 max-w-md space-y-6 mt-8 lg:mt-0">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-3xl xl:text-5xl font-bold leading-tight"
-          >
-            Create your <br /> digital identity
-          </motion.h2>
+  {/* Header */}
+  <div className="z-10">
+    <h1 className="text-3xl xl:text-4xl font-bold">
+      Student Registration
+    </h1>
 
-          <p className="text-white/70 text-sm xl:text-base">
-            Register to access a secure dashboard where you can manage your
-            academic details, upload documents, and submit ideas easily.
-          </p>
+    <p className="text-white/70 mt-2 text-sm xl:text-base">
+      CCSU Official Student Portal
+    </p>
+  </div>
 
-          <div className="space-y-3 text-sm">
-            <p>✔ Fast & Secure Registration</p>
-            <p>✔ Easy Document Upload</p>
-            <p>✔ Track Your Submissions</p>
-            <p>✔ Clean Dashboard Access</p>
-          </div>
-        </div>
+  {/* Middle Content */}
+  <div className="z-10 max-w-md space-y-6 mt-8 lg:mt-0">
 
-        <p className="z-10 text-white/40 text-xs xl:text-sm mt-6 lg:mt-0">
-          © 2026 Smart Portal
-        </p>
-      </div>
+    <motion.h2
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2 }}
+      className="text-3xl xl:text-5xl font-bold leading-tight"
+    >
+      Create Account
+    </motion.h2>
 
+    <p className="text-white/70 text-sm xl:text-base">
+      Register to access your student dashboard.
+    </p>
+
+    {/* Feature Points */}
+    <div className="space-y-2 text-sm text-white/80">
+      <p>✔ Quick student registration</p>
+      <p>✔ Complaint tracking access</p>
+      <p>✔ Secure personal dashboard</p>
+    </div>
+  </div>
+
+  {/* Footer */}
+  <p className="z-10 text-white/40 text-xs xl:text-sm mt-6 lg:mt-0">
+    © 2026 CCSU Registration Portal
+  </p>
+</div>
       {/* RIGHT SIDE */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6">
 
@@ -168,8 +173,7 @@ export default function Register() {
               />
               <select
                 name="gender"
-                onChange={handleChange}
-                className="input bg-white/10 text-white"
+                className="h-[50px] w-full px-3 rounded-xl bg-white/10 border border-white/20 text-gray-100  focus:ring-2 focus:ring-[#F4C751]/40 transition"
               >
                 <option value="">Select Gender</option>
                 <option value="Male">Male</option>
@@ -195,7 +199,7 @@ export default function Register() {
 
           <p className="text-center text-white/70 mt-6 text-sm">
             Already have account?{" "}
-            <Link href="/login" className="text-blue-300 underline">
+            <Link href="/login" className="text-[#D9B85C] hover:underline font-medium">
               Login
             </Link>
           </p>
@@ -234,7 +238,7 @@ function Input({ icon, label, name, type = "text", onChange, error }) {
         </p>
       )}
 
-      <div className="relative flex items-center h-[50px] border border-white/20 rounded-xl px-3 bg-white/10 focus-within:border-blue-400 transition">
+      <div className="relative flex items-center h-[50px] border border-white/20 rounded-xl px-3 bg-white/10 focus-within:border-[#F4C751] focus-within:ring-2 focus-within:ring-[#F4C751]/40 transition">
 
         <span className="text-white/70 mr-2">{icon}</span>
 
@@ -275,8 +279,8 @@ select option {
   width:100%;
   height:55px;
   border-radius:12px;
-  background:#14297a;
-  color:white;
+  background:#D9B85C;
+  color:#14297a;
   font-weight:600;
   letter-spacing:0.5px;
 }

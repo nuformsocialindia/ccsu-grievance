@@ -17,18 +17,20 @@ export default function Navbar() {
 
 
   useEffect(() => {
-  const storedUser = localStorage.getItem("user");
+    const storedUser = localStorage.getItem("user");
 
-  if (storedUser) {
-    const parsedUser = JSON.parse(storedUser)
-    console.log("User Data",parsedUser )
-    setUser(JSON.parse(storedUser));
-    
-  }
-}, []);
-// useEffect(() => {
-//   setUser({ role: "user" });
-// }, []);
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser)
+      console.log("User Data", parsedUser)
+      setUser(JSON.parse(storedUser));
+
+    }
+  }, []);
+  console.log("OPEN", open)
+  console.log("USER", user)
+  useEffect(() => {
+    setUser({ role: "user" });
+  }, []);
 
   const handleLogout = () => {
 
@@ -37,7 +39,7 @@ export default function Navbar() {
 
     router.push("/login");
   };
-  
+
 
   return (
     <div className="fixed top-0 left-64 w-[calc(100%-16rem)] z-50 bg-white/70 backdrop-blur-md px-4 sm:px-6 py-3 flex items-center justify-between">
@@ -101,12 +103,12 @@ export default function Navbar() {
               {user?.role === "admin" && (
                 <>
                   <li className="px-4 py-2 flex items-center gap-2 hover:bg-gray-100 cursor-pointer">
-            {/* <FiUsers /> */}
-            <Link href="/dashboard/admin/users"> View Profile</Link>
-          </li>
-                 <li className="px-4 py-2 flex items-center gap-2 hover:bg-gray-100 cursor-pointer"> 
-                  {/* <FiHelpCircle /> */}
-                   <Link href="/dashboard/admin/settings" className="w-full"> Settings </Link> </li>
+                    {/* <FiUsers /> */}
+                    <Link href="/dashboard/admin/users"> View Profile</Link>
+                  </li>
+                  <li className="px-4 py-2 flex items-center gap-2 hover:bg-gray-100 cursor-pointer">
+                    {/* <FiHelpCircle /> */}
+                    <Link href="/dashboard/admin/settings" className="w-full"> Settings </Link> </li>
                 </>
               )}
 

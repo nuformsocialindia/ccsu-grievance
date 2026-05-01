@@ -1,6 +1,35 @@
 "use client"
+import { useEffect, useState } from "react";
 
 export default function Transfer() {
+
+  const [complaints, setComplaints] = useState([]);
+  const [selectedComplaint, setSelectedComplaint] = useState("");
+
+  // Fetch complaints
+useEffect(() => {
+  const fetchComplaints = async () => {
+    try {
+      const res = await fetch(
+        "http://localhost:5002/api/complaints/transfercomplaints"
+      );
+
+      const data = await res.json();
+
+      console.log("API response:", data);
+
+      const list = data.data || data.complaints || data;
+
+      setComplaints(Array.isArray(list) ? list : []);
+    } catch (error) {
+      console.log("Error fetching complaints:", error);
+      setComplaints([]);
+    }
+  };
+
+  fetchComplaints();
+}, []);
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
 
@@ -19,19 +48,27 @@ export default function Transfer() {
 
         <div className="space-y-6">
 
-          {/* Complaint */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Select Complaint
             </label>
-            <select className="w-full border border-gray-300 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#14297A] focus:border-transparent transition">
-              <option>-- Choose Complaint --</option>
-              <option>#1 Login Issue</option>
-              <option>#2 Payment Failed</option>
+
+            <select
+              value={selectedComplaint}
+              onChange={(e) => setSelectedComplaint(e.target.value)}
+              className="w-full border border-gray-300 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#14297A] focus:border-transparent transition"
+            >
+              <option value="">-- Choose Complaint --</option>
+
+              {complaints.map((item) => (
+                <option key={item.id} value={item.id}>
+                  #{item.id} {item.title}
+                </option>
+              ))}
             </select>
           </div>
 
-          {/* Department */}
+    
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Transfer To
@@ -57,14 +94,12 @@ export default function Transfer() {
           </div>
 
           {/* Button */}
-          <button
-            className="w-full bg-[#14297A] hover:bg-[#0f1f5c] text-white font-semibold py-3 rounded-xl transition shadow-md cursor-pointer"
-          >
+          <button className="w-full bg-[#14297A] hover:bg-[#0f1f5c] text-white font-semibold py-3 rounded-xl transition shadow-md cursor-pointer">
             Transfer Complaint
           </button>
 
         </div>
       </div>
     </div>
-  )
+  );
 }

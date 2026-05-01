@@ -5,6 +5,7 @@ import { MdDelete, MdEdit } from "react-icons/md";
 
 export default function Adminuser() {
     const [open, setOpen] = useState(false);
+    const [currentUser, setCurrentUser] = useState(null)
     const [form, setForm] = useState({
         full_name: "",
         phone: "",
@@ -14,8 +15,8 @@ export default function Adminuser() {
         password: "",
         role: "",
         action: "",
-        assigned_admin_id: "",
-        assigned_manager_id: ""
+        assign_admin_id: "",
+        assign_manager_id: ""
     });
 
     const [users, setUsers] = useState([]);
@@ -31,39 +32,57 @@ export default function Adminuser() {
         role: "",
     });
 
+    useEffect(() => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        setCurrentUser(user);
+    }, []);
     const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        setForm({
+            ...form, [e.target.name]: e.target.value
+
+        });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
+            const token = localStorage.getItem("token")
+            const payload = {
+                ...form,
+                assign_admin_id:
+                    currentUser?.role === "admin" ? currentUser.id : form.assign_admin_id
+            }
+            console.log("Payload ja rh h", payload)
             const res = await fetch("http://localhost:5002/api/adminadd/add-adminuser", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
                 },
-                body: JSON.stringify(form),
+                body: JSON.stringify(payload),
             });
 
             const data = await res.json();
+            console.log("Server Response",data)
 
             if (res.ok) {
                 toast.success("User created successfully");
 
                 setForm({
-                    full_name: "",
-                    phone: "",
-                    email: "",
-                    address: "",
-                    username: "",
-                    password: "",
-                    role: "",
+                    full_name: form.full_name,
+                    phone: form.phone,
+                    email: form.email,
+                    address: form.address,
+                    username: form.username,
+                    password: form.password,
+                    role: form.role,
+                    assign_admin_id:
+                        currentUser?.role === "admin" ? currentUser.id : null,
+                    assign_manager_id: form.assign_manager_id || null
                 });
-
                 setOpen(false);
-                fetchUsers(); // refresh table
+                fetchUsers();
             } else {
                 toast.error(data.message || "Something went wrong");
             }
@@ -74,9 +93,15 @@ export default function Adminuser() {
     };
     const fetchUsers = async () => {
         try {
-            const res = await fetch("http://localhost:5002/api/adminadd/all");
+            const token = localStorage.getItem("token")
+            const res = await fetch("http://localhost:5002/api/adminadd/all", {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             const data = await res.json();
-            setUsers(data);
+            console.log("API response", data)
+           setUsers(Array.isArray(data) ? data : data.data || []);
         } catch (error) {
             console.log(error);
         }
@@ -88,8 +113,12 @@ export default function Adminuser() {
     // delete user 
     const handleDelete = async (id) => {
         try {
+            const token = localStorage.getItem("token")
             const res = await fetch(`http://localhost:5002/api/adminadd/delete/${id}`, {
                 method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             });
 
             const data = await res.json();
@@ -111,10 +140,12 @@ export default function Adminuser() {
     };
     const handleUpdate = async () => {
         try {
+            const token = localStorage.getItem("token")
             const res = await fetch(`http://localhost:5002/api/adminadd/update/${editForm.id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify(editForm),
             });
@@ -139,11 +170,15 @@ export default function Adminuser() {
             <div>
                 <div className="min-h-screen bg-gray-100 p-4 flex flex-col items-center">
                     <div className='w-full flex justify-end mt-4'>
-                        <button
-                            onClick={() => setOpen(true)}
-                            className="bg-[#14297a] text-white px-6 py-2 rounded-lg shadow-lg hover:bg-[#14297a] transition cursor-pointer justify-end"> + Add user
+                        {currentUser?.role === "admin" && (
+                            <button
+                                onClick={() => setOpen(true)}
+                                className="bg-[#14297a] text-white px-6 py-2 rounded-lg shadow-lg hover:bg-[#14297a] transition cursor-pointer justify-end"> + Add user
 
-                        </button>
+                            </button>
+                        )
+
+                        }
                     </div>
                     {/* table  */}
 
@@ -178,7 +213,14 @@ export default function Adminuser() {
 
                                         <td className="p-2 border">{user.username}</td>
 
-                                        <td className="p-2 border">{user.role}</td>
+                                        <td className="p-2 border">
+                                            <span className={`px-2 py-1 rounded text-white text-sm
+        ${user.role === "admin" ? "bg-blue-600" :
+                                                    user.role === "manager" ? "bg-green-600" :
+                                                        "bg-yellow-500"}`}>
+                                                {user.role}
+                                            </span>
+                                        </td>
                                         <td className="p-2 border flex gap-3 justify-center items-center">
 
                                             {/* Edit Button */}
@@ -191,13 +233,15 @@ export default function Adminuser() {
                                             </button>
 
                                             {/* Delete Button */}
-                                            <button
-                                                onClick={() => handleDelete(user.id)}
-                                                className="text-red-600 hover:text-red-800 cursor-pointer"
-                                                title="Delete User"
-                                            >
-                                                <MdDelete size={20} />
-                                            </button>
+                                            {currentUser?.role === "admin" && (
+                                                <button
+                                                    onClick={() => handleDelete(user.id)}
+                                                    className="text-red-600 hover:text-red-800 cursor-pointer"
+                                                    title="Delete User"
+                                                >
+                                                    <MdDelete size={20} />
+                                                </button>
+                                            )}
 
                                         </td>
 
@@ -325,23 +369,24 @@ export default function Adminuser() {
                                                 {/* <option value="user">User</option> */}
                                             </select>
 
-                                            <select
-                                                name="assigned_manager_id"
-                                                value={form.assigned_manager_id}
-                                                onChange={handleChange}
-                                                className="border p-2 rounded w-full"
-                                            >
-                                                <option value="">Assign Manager / Sub Admin</option>
+                                            {currentUser?.role === "admin" && (
+                                                <select
+                                                    name="assign_manager_id"
+                                                    value={form.assign_manager_id}
+                                                    onChange={handleChange}
+                                                    className="border p-2 rounded w-full"
+                                                >
+                                                    <option value="">Assign Manager / Sub Admin</option>
 
-                                                {users
-                                                    .filter(u => u.role === "manager" || u.role === "sub_admin")
-                                                    .map(u => (
-                                                        <option key={u.id} value={u.id}>
-                                                            {u.full_name} ({u.role})
-                                                        </option>
-                                                    ))}
-                                            </select>
-
+                                                    {users
+                                                        .filter(u => u.role === "manager" || u.role === "sub_admin")
+                                                        .map(u => (
+                                                            <option key={u.id} value={u.id}>
+                                                                {u.full_name} ({u.role})
+                                                            </option>
+                                                        ))}
+                                                </select>
+                                            )}
                                             {/* Submit */}
                                             <div className="md:col-span-2">
                                                 <button
@@ -424,42 +469,44 @@ export default function Adminuser() {
                                             onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
                                         />
 
+                                        {currentUser?.role === "admin" && (
+                                            <select
+                                                name="assign_admin_id"
+                                                value={editForm.assign_admin_id}
+                                                onChange={(e) =>
+                                                    setEditForm({ ...editForm, assign_admin_id: e.target.value })
+                                                }
+                                                className="border p-2 rounded w-full"
+                                            >
+                                                <option value="">Select Admin</option>
+
+                                                {users
+                                                    .filter(u => u.role === "admin")
+                                                    .map(admin => (
+                                                        <option key={admin.id} value={admin.id}>
+                                                            {admin.full_name}
+                                                        </option>
+                                                    ))}
+                                            </select>
+                                        )}
                                         <select
-                                            name="assigned_admin_id"
-                                            value={editForm.assigned_admin_id}
+                                            name="assign_manager_id"
+                                            value={editForm.assign_manager_id || ""}
                                             onChange={(e) =>
-                                                setEditForm({ ...editForm, assigned_admin_id: e.target.value })
+                                                setEditForm({ ...editForm, assign_manager_id: e.target.value })
                                             }
-                                         
                                             className="border p-2 rounded w-full"
                                         >
-                                            <option value="">Select Admin</option>
+                                            <option value="">Assign Manager</option>
+
                                             {users
-                                                .filter(u => u.role === "admin")
-                                                .map(admin => (
-                                                    <option key={admin.id} value={admin.id}>
-                                                        {admin.full_name}
+                                                .filter(u => u.role === "manager" || u.role === "sub_admin")
+                                                .map(u => (
+                                                    <option key={u.id} value={u.id}>
+                                                        {u.full_name}
                                                     </option>
                                                 ))}
                                         </select>
-                                        <select
-  name="assigned_manager_id"
-  value={editForm.assigned_manager_id || ""}
-  onChange={(e) =>
-    setEditForm({ ...editForm, assigned_manager_id: e.target.value })
-  }
-  className="border p-2 rounded w-full"
->
-  <option value="">Assign Manager</option>
-
-  {users
-    .filter(u => u.role === "manager" || u.role === "sub_admin")
-    .map(u => (
-      <option key={u.id} value={u.id}>
-        {u.full_name}
-      </option>
-    ))}
-</select>
 
                                         {/* Button */}
                                         <div className="md:col-span-2 mt-2">
