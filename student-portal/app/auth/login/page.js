@@ -38,8 +38,14 @@ export default function Login() {
 
       toast.success(res.data.message || "Login successfull");
 
+      if (!res.data.token) {
+        console.error("Token missing!");
+        return;
+      }
+
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
+      document.cookie = `token=${res.data.token}; path=/`
 
 
       // redirect
@@ -53,7 +59,7 @@ export default function Login() {
 
     } catch (err) {
       const msg = err.response?.data?.message || "Login Failed"
-      if (msg.toLowerCase().includes("email.")) {
+      if (msg.toLowerCase().includes("email")) {
         setErrors({ email: msg, password: msg, general: "" })
       }
       else if (msg.toLowerCase().includes("password")) {

@@ -1,6 +1,15 @@
 "use client"
 import Link from "next/link"
-import { FiHome, FiUser, FiFileText, FiPlusCircle, FiBell, FiHelpCircle, FiSettings } from "react-icons/fi"
+import { FiHome, FiUser, FiFileText, FiPlusCircle, FiBell, FiHelpCircle, FiSettings ,FiLogOut} from "react-icons/fi"
+
+const handleLogout = () => {
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    router.push("/login");
+  };
+
 
 
 export default function Sidebar() {
@@ -26,21 +35,31 @@ export default function Sidebar() {
             <Link href="/dashboard/user/my-complaints">My Complaints</Link>
           </li>
 
-          {/* <li className="flex items-center gap-3 hover:text-yellow-300 cursor-pointer">
+          <li className="flex items-center gap-3 hover:text-yellow-300 cursor-pointer">
             <FiUser />
             <Link href="/dashboard/user/profile">User Profile</Link>
-          </li> */}
+          </li>
 
-          {/* <li className="flex items-center gap-3 hover:text-yellow-300 cursor-pointer">
+          <li className="flex items-center gap-3 hover:text-yellow-300 cursor-pointer">
             <FiHelpCircle />
             <Link href="/dashboard/user/settings">Settings</Link>
-          </li> */}
+          </li>
 
 
 
 
         </ul>
       </div>
+        <div>
+        <li
+          onClick={handleLogout}
+          className="flex items-center gap-3 text-red-400 hover:text-red-300 cursor-pointer"
+        >
+          <FiLogOut />
+          Logout
+        </li>
+      </div>
+      
 
 
     </aside>

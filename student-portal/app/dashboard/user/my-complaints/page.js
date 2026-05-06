@@ -40,7 +40,7 @@ export default function MyComplaints() {
 
   const fetchComplaints = async () => {
     try {
-      const res = await fetch("http://localhost:5002/api/complaints/get-complaints");
+      const res = await fetch("http://localhost:5002/api/usercomplaints/get-complaints");
       console.log("Response receieved", res)
       const data = await res.json();
       console.log("Data from API", data)

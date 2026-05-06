@@ -6,7 +6,7 @@ export default function DashboardCard() {
   const [data, setData] = useState(null)
   const [recentComplaints, setRecentComplaints] = useState([])
 
-  const total = data?.total || 1
+  const total = data?.total || 0
 
   // Dashboard Data
   useEffect(() => {

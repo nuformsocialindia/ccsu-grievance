@@ -1,33 +1,28 @@
 "use client";
+import {useState,useEffect} from "react"
+import axios from "axios"
 
 export default function Department() {
-  const departments = [
-    {
-      name: "Technical Support",
-      desc: "Handles bugs, system errors, login issues",
-      color: "bg-blue-100 text-blue-700",
-    },
-    {
-      name: "Billing & Accounts",
-      desc: "Payment, refund, invoice related complaints",
-      color: "bg-green-100 text-green-700",
-    },
-    {
-      name: "Customer Support",
-      desc: "General queries and user assistance",
-      color: "bg-yellow-100 text-yellow-700",
-    },
-    {
-      name: "Management / Escalation",
-      desc: "High priority and escalated complaints",
-      color: "bg-red-100 text-red-700",
-    },
-    {
-      name: "Legal & Compliance",
-      desc: "Legal issues and policy related cases",
-      color: "bg-purple-100 text-purple-700",
-    },
-  ];
+  const [departments,setDepartments] = useState([])
+
+
+
+  useEffect(()=>{
+    fetchDepartments()
+  },[])
+
+
+  const fetchDepartments = async()=>{
+    try {
+      const res = await axios.get("http://localhost:5002/api/admin/departments")
+      console.log("API response", res.data)
+      setDepartments(res.data)
+      
+    } catch (error) {
+      console.error("Error fetching documents",error)
+      
+    }
+  }
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -45,7 +40,7 @@ export default function Department() {
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-        {departments.map((dept, index) => (
+        {departments.map((dept,index) => (
           <div
             key={index}
             className="bg-white rounded-2xl shadow-md p-6 border hover:shadow-xl transition"
@@ -63,7 +58,7 @@ export default function Department() {
 
             {/* Description */}
             <p className="text-gray-500 text-sm mt-2">
-              {dept.desc}
+              {dept.description}
             </p>
 
             {/* Button */}

@@ -2,16 +2,18 @@
 
 import { FiEye, FiEdit } from "react-icons/fi";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AllComplaints() {
   const [data, setData] = useState([]);
   const [status, setStatus] = useState("pending")
   const [openIndex, setOpenIndex] = useState(null)
   const [selectedComplaint, setSelectedComplaint] = useState(null)
-  const [showModal, setShowModal] = useState(false)
+  // const [showModal, setShowModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedEditComplaint, setSelectedEditComplaint] = useState(null);
   const [editForm, setEditForm] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     fetchComplaints();
@@ -178,14 +180,11 @@ export default function AllComplaints() {
                     <div className="flex items-center justify-center gap-3">
                       <button
                         onClick={() => {
-                          setSelectedComplaint(item);
-                          setShowModal(true)
+                         router.push("/dashboard/admin/complaint/details");
                         }}
-
-
-                        className="p-2 rounded-full bg-blue-60 transition cursor-pointer">
+                        className="p-2 rounded-full bg-blue-60 transition cursor-pointer"
+                      >
                         <FiEye className="text-[#14297a] text-base" />
-
                       </button>
                       <button
                         onClick={() => {
@@ -218,87 +217,7 @@ export default function AllComplaints() {
         )}
 
       </div>
-      {showModal && selectedComplaint && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
 
-          {/* CARD */}
-          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden">
-
-            {/* HEADER */}
-            <div className="bg-[#14297a] px-6 py-4 flex justify-between items-center">
-              <h2 className="text-white text-lg font-semibold">
-                Complaint Details
-              </h2>
-
-              <button
-                onClick={() => setShowModal(false)}
-                className="text-white hover:text-[#F4C751] text-xl cursor-pointer"
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* BODY */}
-            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-
-              {/* FIELD BOX */}
-              {[
-                { label: "Name", value: selectedComplaint.name },
-                { label: "Enrollment", value: selectedComplaint.enrollment },
-                { label: "College", value: selectedComplaint.college },
-                { label: "Phone", value: selectedComplaint.phone },
-                { label: "Department", value: selectedComplaint.department },
-                { label: "Semester", value: selectedComplaint.semester },
-                { label: "Email", value: selectedComplaint.email },
-                { label: "Category", value: selectedComplaint.category },
-                { label: "Subject", value: selectedComplaint.subject },
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  className="border border-gray-200 rounded-xl p-3 bg-gray-50"
-                >
-                  <p className="text-xs text-gray-500 uppercase tracking-wide">
-                    {item.label}
-                  </p>
-                  <p className="text-gray-800 font-medium mt-1">
-                    {item.value || "Not provided"}
-                  </p>
-                </div>
-              ))}
-
-              {/* STATUS */}
-              <div className="border border-gray-200 rounded-xl p-3 bg-gray-50">
-                <p className="text-xs text-gray-500 uppercase tracking-wide">
-                  Status
-                </p>
-
-                <span
-                  className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold
-              ${selectedComplaint.status === "Pending"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : selectedComplaint.status === "Resolved"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
-                    }`}
-                >
-                  {selectedComplaint.status || "Not provided"}
-                </span>
-              </div>
-
-              {/* DESCRIPTION (FULL WIDTH) */}
-              <div className="md:col-span-2 border border-gray-200 rounded-xl p-3 bg-gray-50">
-                <p className="text-xs text-gray-500 uppercase tracking-wide">
-                  Description
-                </p>
-                <p className="text-gray-700 mt-2 leading-relaxed">
-                  {selectedComplaint.description || "Not provided"}
-                </p>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      )}
 
       {showEditModal && selectedEditComplaint && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
@@ -318,7 +237,7 @@ export default function AllComplaints() {
               </button>
             </div>
 
-       
+
             {/* BODY */}
             <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-5 text-sm overflow-y-auto flex-1">
 

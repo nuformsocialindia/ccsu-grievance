@@ -16,6 +16,7 @@ export default function ComplaintForm() {
         email: "",
         phone: "",
         college: "",
+        enrollment:"",
         category: "",
         subject: "",
         description: "",
@@ -81,6 +82,7 @@ export default function ComplaintForm() {
                     email: "",
                     phone: "",
                     college: "",
+                    enrollment: "",
                     category: "",
                     subject: "",
                     description: "",
@@ -113,6 +115,8 @@ export default function ComplaintForm() {
         if (!form.email) newErrors.email = "Email is required";
         if (!form.phone) newErrors.phone = "Phone is required";
         if (!form.college) newErrors.college = "College is required";
+        if (!form.enrollment) newErrors.enrollment = "Enrollment is required";
+
 
 
         setErrors(newErrors);
@@ -223,6 +227,16 @@ export default function ComplaintForm() {
                         />
                         {errors.college && (
                             <p className="text-red-500 text-xs mt-1">{errors.college}</p>
+                        )}
+                         <input
+                            className="input"
+                            name="enrollment"
+                            placeholder="Enrollment No"
+                            value={form.enrollment}
+                            onChange={handleChange}
+                        />
+                        {errors.enrollment && (
+                            <p className="text-red-500 text-xs mt-1">{errors.enrollment}</p>
                         )}
                     </div>
 

@@ -409,121 +409,181 @@ export default function Adminuser() {
 
                         )
                     }
-                    {editOpen && (
-                        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50 p-4">
+                  {editOpen && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50 p-4">
+    
+    <div className="bg-white w-full max-w-3xl rounded-xl shadow-xl p-6 relative overflow-y-auto max-h-[100vh]">
 
-                            <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl relative overflow-hidden">
+      {/* Close Button */}
+      <button
+        onClick={() => setEditOpen(false)}
+        className="absolute top-3 right-3 text-gray-600 hover:text-black text-xl cursor-pointer"
+      >
+        ✕
+      </button>
 
-                                {/* Header */}
-                                <div className=" text-black px-6 py-4 flex justify-between items-center ">
-                                    <h2 className="text-lg font-semibold justify-center text-center">Edit User</h2>
+      {/* Title */}
+      <h2 className="text-2xl font-semibold mb-6 text-center">
+        Edit User
+      </h2>
 
-                                    {/* Close Button */}
-                                    <button
-                                        onClick={() => setEditOpen(false)}
-                                        className="text-black text-2xl hover:opacity-80"
-                                    >
-                                        ✕
-                                    </button>
-                                </div>
+      {/* Form */}
+      <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                                {/* Body */}
-                                <div className="p-6 overflow-y-auto max-h-[90vh]">
+        {/* Full Name */}
+        <div>
+          <label className="block mb-1 font-medium">Full Name</label>
+          <input
+            name="full_name"
+            value={editForm.full_name}
+            onChange={(e) =>
+              setEditForm({ ...editForm, full_name: e.target.value })
+            }
+            className="border p-2 rounded w-full"
+            placeholder="Enter Full Name"
+          />
+        </div>
 
-                                    <form className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                        <input
-                                            name="full_name"
-                                            value={editForm.full_name}
-                                            onChange={(e) => setEditForm({ ...editForm, full_name: e.target.value })}
-                                            className="border rounded-lg p-3"
-                                            placeholder="Full Name"
-                                        />
-                                        <input
-                                            name="phone"
-                                            value={editForm.phone}
-                                            onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                                        />
+        {/* Phone */}
+        <div>
+          <label className="block mb-1 font-medium">Phone Number</label>
+          <input
+            name="phone"
+            value={editForm.phone}
+            onChange={(e) =>
+              setEditForm({ ...editForm, phone: e.target.value })
+            }
+            className="border p-2 rounded w-full"
+            placeholder="Enter Phone Number"
+          />
+        </div>
 
-                                        <input
-                                            name="email"
-                                            value={editForm.email}
-                                            onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                                        />
+        {/* Email */}
+        <div>
+          <label className="block mb-1 font-medium">Email</label>
+          <input
+            name="email"
+            value={editForm.email}
+            onChange={(e) =>
+              setEditForm({ ...editForm, email: e.target.value })
+            }
+            className="border p-2 rounded w-full"
+            placeholder="Enter Email"
+          />
+        </div>
 
-                                        <input
-                                            name="address"
-                                            value={editForm.address}
-                                            onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
-                                        />
+        {/* Address */}
+        <div>
+          <label className="block mb-1 font-medium">Address</label>
+          <input
+            name="address"
+            value={editForm.address}
+            onChange={(e) =>
+              setEditForm({ ...editForm, address: e.target.value })
+            }
+            className="border p-2 rounded w-full"
+            placeholder="Enter Address"
+          />
+        </div>
 
-                                        <input
-                                            name="username"
-                                            value={editForm.username}
-                                            onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
-                                        />
+        {/* Username */}
+        <div>
+          <label className="block mb-1 font-medium">Username / ID</label>
+          <input
+            name="username"
+            value={editForm.username}
+            onChange={(e) =>
+              setEditForm({ ...editForm, username: e.target.value })
+            }
+            className="border p-2 rounded w-full"
+            placeholder="Enter Username"
+          />
+        </div>
 
-                                        <input
-                                            type="password"
-                                            name="password"
-                                            value={editForm.password}
-                                            onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
-                                        />
+        {/* Password */}
+        <div>
+          <label className="block mb-1 font-medium">Password</label>
+          <input
+            type="password"
+            name="password"
+            value={editForm.password}
+            onChange={(e) =>
+              setEditForm({ ...editForm, password: e.target.value })
+            }
+            className="border p-2 rounded w-full"
+            placeholder="Enter Password"
+          />
+        </div>
 
-                                        {currentUser?.role === "admin" && (
-                                            <select
-                                                name="assign_admin_id"
-                                                value={editForm.assign_admin_id}
-                                                onChange={(e) =>
-                                                    setEditForm({ ...editForm, assign_admin_id: e.target.value })
-                                                }
-                                                className="border p-2 rounded w-full"
-                                            >
-                                                <option value="">Select Admin</option>
+        {/* Assign Admin */}
+        {/* {currentUser?.role === "admin" && (
+          <div>
+            <label className="block mb-1 font-medium">Assign Admin</label>
+            <select
+              name="assign_admin_id"
+              value={editForm.assign_admin_id}
+              onChange={(e) =>
+                setEditForm({
+                  ...editForm,
+                  assign_admin_id: e.target.value,
+                })
+              }
+              className="border p-2 rounded w-full"
+            >
+              <option value="">Select Admin</option>
+              {users
+                .filter((u) => u.role === "admin")
+                .map((admin) => (
+                  <option key={admin.id} value={admin.id}>
+                    {admin.full_name}
+                  </option>
+                ))}
+            </select>
+          </div>
+        )} */}
 
-                                                {users
-                                                    .filter(u => u.role === "admin")
-                                                    .map(admin => (
-                                                        <option key={admin.id} value={admin.id}>
-                                                            {admin.full_name}
-                                                        </option>
-                                                    ))}
-                                            </select>
-                                        )}
-                                        <select
-                                            name="assign_manager_id"
-                                            value={editForm.assign_manager_id || ""}
-                                            onChange={(e) =>
-                                                setEditForm({ ...editForm, assign_manager_id: e.target.value })
-                                            }
-                                            className="border p-2 rounded w-full"
-                                        >
-                                            <option value="">Assign Manager</option>
+        {/* Assign Manager */}
+        <div>
+          <label className="block mb-1 font-medium">Assign Manager</label>
+          <select
+            name="assign_manager_id"
+            value={editForm.assign_manager_id || ""}
+            onChange={(e) =>
+              setEditForm({
+                ...editForm,
+                assign_manager_id: e.target.value,
+              })
+            }
+            className="border p-2 rounded w-full"
+          >
+            <option value="">Assign Manager</option>
+            {users
+              .filter(
+                (u) => u.role === "manager" || u.role === "sub_admin"
+              )
+              .map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.full_name}
+                </option>
+              ))}
+          </select>
+        </div>
 
-                                            {users
-                                                .filter(u => u.role === "manager" || u.role === "sub_admin")
-                                                .map(u => (
-                                                    <option key={u.id} value={u.id}>
-                                                        {u.full_name}
-                                                    </option>
-                                                ))}
-                                        </select>
+        {/* Submit */}
+        <div className="md:col-span-2">
+          <button
+            type="button"
+            onClick={handleUpdate}
+            className="bg-[#14297a] text-white py-2 rounded-lg w-full cursor-pointer"
+          >
+            Update User
+          </button>
+        </div>
 
-                                        {/* Button */}
-                                        <div className="md:col-span-2 mt-2">
-                                            <button
-                                                type="button"
-                                                onClick={handleUpdate}
-                                                className="w-full bg-[#14297a] text-white py-3 rounded-lg"
-                                            >
-                                                Update User
-                                            </button>
-                                        </div>
-
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+      </form>
+    </div>
+  </div>
+)}
 
                 </div>
             </div>

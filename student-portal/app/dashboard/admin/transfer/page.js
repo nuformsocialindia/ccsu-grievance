@@ -1,34 +1,90 @@
 "use client"
+import axios from "axios"
 import { useEffect, useState } from "react";
 
 export default function Transfer() {
 
   const [complaints, setComplaints] = useState([]);
-  const [selectedComplaint, setSelectedComplaint] = useState("");
+  const [selectedComplaint, setSelectedComplaint] = useState(" ");
+  const [departments, setDepartments] = useState([]);
+  // const [complaint, setComplaint] = useState([])
 
-  // Fetch complaints
+
+
+  useEffect(() => {
+    fetchDepartments()
+  }, [])
+
+
+  const fetchDepartments = async () => {
+    try {
+      const res = await axios.get("http://localhost:5002/api/departments")
+      console.log("departments", res.data)
+      setDepartments(
+        Array.isArray(res.data)
+          ? res.data
+          : Array.isArray(res.data.data)
+            ? res.data.data
+            : []
+      );
+
+    } catch (error) {
+      console.error("error fetching documents", error)
+
+    }
+  }
 useEffect(() => {
-  const fetchComplaints = async () => {
+  console.log("USEEFFECT RAN");
+}, []);
+useEffect(() => {
+  console.log("useEffect started");
+  const fetchComplaint = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5002/api/complaints/transfercomplaints"
+        "http://localhost:5002/api/complaints/title-complaint"
       );
 
       const data = await res.json();
 
-      console.log("API response:", data);
+      console.log("Title API DATA:", data);
 
-      const list = data.data || data.complaints || data;
+      data.forEach((item) => {
+        if (item.title) {
+          console.log("Title found:", item.title);
+        } else {
+          console.log("Title missing");
+        }
+      });
 
-      setComplaints(Array.isArray(list) ? list : []);
+      setComplaints(data); 
     } catch (error) {
-      console.log("Error fetching complaints:", error);
-      setComplaints([]);
+      console.error("Error:", error);
     }
   };
 
-  fetchComplaints();
+  fetchComplaint();
 }, []);
+  // Fetch complaints
+  // useEffect(() => {
+  //   const fetchComplaints = async () => {
+  //     try {
+  //       const res = await fetch(
+  //         "http://localhost:5002/api/complaints/transfercomplaints"
+  //       );
+
+  //       const data = await res.json();
+
+  //       console.log("API response:", data);
+
+  //       setComplaints(Array.isArray(data) ? data : []);
+  //     } catch (error) {
+  //       console.log("Error fetching complaints:", error);
+  //       setComplaints([]);
+  //     }
+  //   };
+
+  //   fetchComplaints();
+  // }, []);
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -53,11 +109,7 @@ useEffect(() => {
               Select Complaint
             </label>
 
-            <select
-              value={selectedComplaint}
-              onChange={(e) => setSelectedComplaint(e.target.value)}
-              className="w-full border border-gray-300 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#14297A] focus:border-transparent transition"
-            >
+            <select className="w-full border border-gray-300 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#14297A]">
               <option value="">-- Choose Complaint --</option>
 
               {complaints.map((item) => (
@@ -68,16 +120,19 @@ useEffect(() => {
             </select>
           </div>
 
-    
+
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Transfer To
             </label>
             <select className="w-full border border-gray-300 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#14297A] focus:border-transparent transition">
-              <option>-- Select Department --</option>
-              <option>Support Team</option>
-              <option>Billing Team</option>
-              <option>Technical Team</option>
+
+              <option value="">-- Select Department --</option>
+              {departments.map((dept) => (
+                <option key={dept._id} value={dept._id}>
+                  {dept.name}
+                </option>
+              ))}
             </select>
           </div>
 
